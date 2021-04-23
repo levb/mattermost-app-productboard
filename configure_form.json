@@ -1,0 +1,22 @@
+{
+	"type": "form",
+	"form": {
+		"title": "Configures ProductBoard access credentials",
+		"icon": "http://localhost:8080/static/icon.png",
+		"fields": [
+			{
+				"type": "text",
+				"name": "token",
+				"modal_label": "Personal Access Token",
+				"label": "token",
+				"is_required": true
+			}
+		],
+		"call": {
+			"path": "/configure",
+			"expand": {
+				"acting_user_token": "all"
+			}
+		}
+	}
+}
