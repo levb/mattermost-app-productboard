@@ -1,0 +1,17 @@
+{
+	"app_id": "com.mattermost.product-board",
+	"version":"0.0.2",
+	"display_name": "ProductBoard integration",
+	"app_type": "http",
+	"root_url": "http://localhost:8080",
+	"homepage_url": "https://github.com/levb/mattermost-app-productboard",
+	"requested_permissions": [
+		"act_as_admin",
+		"act_as_user",
+		"remote_oauth2"
+	],
+	"requested_locations": [
+		"/command",
+		"/post_menu"
+	]
+}
