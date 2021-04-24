@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strings"
 
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 	"github.com/mattermost/mattermost-plugin-apps/apps/mmclient"
@@ -32,6 +33,8 @@ type PBCreateNoteResponse struct {
 func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	title, _ := creq.Values["title"].(string)
 	content, _ := creq.Values["content"].(string)
+	email, _ := creq.Values["email"].(string)
+	tags, _ := creq.Values["tags"].(string)
 	u, err := userFromContext(creq)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, err)
@@ -46,9 +49,11 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 	}
 
 	data, err := json.Marshal(&PBCreateNoteRequest{
-		Title:      title,
-		Content:    content,
-		DisplayURL: permalink,
+		Title:         title,
+		Content:       content,
+		DisplayURL:    permalink,
+		CustomerEmail: email,
+		Tags:          strings.Split(tags, ","),
 	})
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err)
