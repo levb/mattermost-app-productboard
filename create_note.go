@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"path"
 	"strings"
 
 	"github.com/mattermost/mattermost-plugin-apps/apps"
@@ -31,29 +29,33 @@ type PBCreateNoteResponse struct {
 }
 
 func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
+	interactive, _ := creq.Values["interactive"].(string)
+	if creq.State == "post-menu" || interactive == "true" {
+		createNoteForm(w, req, creq)
+		return
+	}
+
 	title, _ := creq.Values["title"].(string)
 	content, _ := creq.Values["content"].(string)
 	email, _ := creq.Values["email"].(string)
-	tags, _ := creq.Values["tags"].(string)
-	u, err := userFromContext(creq)
+	tagStr, _ := creq.Values["tags"].(string)
+	tags := strings.Split(tagStr, ",")
+	if len(tags) == 0 || len(tags) == 1 && tags[0] == "" {
+		tags = nil
+	}
+
+	user, err := userFromContext(creq)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	permalink := ""
-	if creq.Context.PostID != "" {
-		u, _ := url.Parse(creq.Context.MattermostSiteURL)
-		u.Path = path.Join(u.Path, "_redirect", "pl", creq.Context.PostID)
-		permalink = u.String()
-	}
-
 	data, err := json.Marshal(&PBCreateNoteRequest{
 		Title:         title,
 		Content:       content,
-		DisplayURL:    permalink,
+		DisplayURL:    permalink(creq),
 		CustomerEmail: email,
-		Tags:          strings.Split(tags, ","),
+		Tags:          tags,
 	})
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err)
@@ -65,7 +67,7 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 		respondError(w, http.StatusInternalServerError, err)
 		return
 	}
-	pbReq.Header.Add("Authorization", "Bearer "+u.AccessToken)
+	pbReq.Header.Add("Authorization", "Bearer "+user.AccessToken)
 	pbReq.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -87,25 +89,16 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 		return
 	}
 
-	noteLink := ""
-	if permalink == "" {
-		noteLink = fmt.Sprintf("[Note](%s)", pb.Links.HTML)
-	} else {
-		noteLink = fmt.Sprintf("[Note](%s) from [post](%s)", pb.Links.HTML, permalink)
-	}
-	message := fmt.Sprintf(
-		"Thanks! A new %s has been submitted to ProductBoard for processing by a PM.\n"+
-			"Contact a Product Manager if you need an urgent reply.",
-		noteLink)
-
 	// Post feedback to the channel, as the acting user
 	asUser := mmclient.AsActingUser(creq.Context)
 	asUser.CreatePost(&model.Post{
 		UserId:    creq.Context.ActingUserID,
 		ChannelId: creq.Context.ChannelID,
 		RootId:    creq.Context.RootPostID,
-		Message:   message,
+		Message: fmt.Sprintf(
+			"[%s](%s) has been submitted to ProductBoard for processing by a Product Manager.",
+			title, pb.Links.HTML),
 	})
 
-	respond(w, nil, message)
+	respond(w, nil, "[%s](%s) created.", title, pb.Links.HTML)
 }

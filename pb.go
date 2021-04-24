@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/felixge/httpsnoop"
 	"github.com/mattermost/mattermost-plugin-apps/apps"
@@ -120,4 +122,13 @@ func writeData(w http.ResponseWriter, ct string, statusCode int, data []byte) {
 
 func appURL(creq *apps.CallRequest, path string) string {
 	return creq.Context.MattermostSiteURL + creq.Context.AppPath + path
+}
+
+func permalink(creq *apps.CallRequest) string {
+	if creq.Context.PostID == "" {
+		return ""
+	}
+	u, _ := url.Parse(creq.Context.MattermostSiteURL)
+	u.Path = path.Join(u.Path, "_redirect", "pl", creq.Context.PostID)
+	return u.String()
 }
