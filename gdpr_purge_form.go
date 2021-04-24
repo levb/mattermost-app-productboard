@@ -6,6 +6,14 @@ import (
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 )
 
+var gdprPurgeCall = &apps.Call{
+	Path: "/gdpr-purge",
+	Expand: &apps.Expand{
+		ActingUserAccessToken: apps.ExpandAll,
+		OAuth2User:            apps.ExpandAll,
+	},
+}
+
 func gdprPurgeForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	respondForm(w, &apps.Form{
 		Title: "Purge all data for a customer (GDPR)",
@@ -26,12 +34,6 @@ func gdprPurgeForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequ
 				IsRequired: true,
 			},
 		},
-		Call: &apps.Call{
-			Path: "/gdpr-purge",
-			Expand: &apps.Expand{
-				ActingUserAccessToken: apps.ExpandAll,
-				OAuth2User:            apps.ExpandAll,
-			},
-		},
+		Call: gdprPurgeCall,
 	})
 }
