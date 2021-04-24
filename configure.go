@@ -4,10 +4,11 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/pkg/errors"
+
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 	"github.com/mattermost/mattermost-plugin-apps/apps/mmclient"
 	"github.com/mattermost/mattermost-plugin-apps/server/utils"
-	"github.com/pkg/errors"
 )
 
 type User struct {

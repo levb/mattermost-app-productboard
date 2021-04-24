@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/mattermost/mattermost-plugin-apps/apps"
 	"github.com/pkg/errors"
+
+	"github.com/mattermost/mattermost-plugin-apps/apps"
 )
 
 func gdprPurge(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
