@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 )
@@ -48,7 +47,7 @@ func createNoteForm(w http.ResponseWriter, req *http.Request, creq *apps.CallReq
 				Name:       "title",
 				Label:      "title",
 				ModalLabel: "Title",
-				IsRequired: true,
+				IsRequired: creq.State != "command",
 				Value:      title,
 			},
 			{
@@ -57,7 +56,7 @@ func createNoteForm(w http.ResponseWriter, req *http.Request, creq *apps.CallReq
 				Name:        "content",
 				Label:       "content",
 				ModalLabel:  "Text",
-				IsRequired:  true,
+				IsRequired:  creq.State != "command",
 				Value:       content,
 			},
 			{
@@ -82,7 +81,7 @@ func createNoteForm(w http.ResponseWriter, req *http.Request, creq *apps.CallReq
 		Call: createNoteCall("form"),
 	}
 
-	if strings.HasPrefix(string(creq.Context.Location), string(apps.LocationCommand)) {
+	if creq.State == "command" {
 		form.Fields = append(form.Fields, &apps.Field{
 			Type:        apps.FieldTypeBool,
 			Name:        "interactive",

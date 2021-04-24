@@ -30,11 +30,6 @@ type PBCreateNoteResponse struct {
 
 func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	interactive, _ := creq.Values["interactive"].(string)
-	if creq.State == "post-menu" || interactive == "true" {
-		createNoteForm(w, req, creq)
-		return
-	}
-
 	title, _ := creq.Values["title"].(string)
 	content, _ := creq.Values["content"].(string)
 	email, _ := creq.Values["email"].(string)
@@ -42,6 +37,11 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 	tags := strings.Split(tagStr, ",")
 	if len(tags) == 0 || len(tags) == 1 && tags[0] == "" {
 		tags = nil
+	}
+
+	if creq.State == "post-menu" || interactive == "true" || title == "" || content == "" {
+		createNoteForm(w, req, creq)
+		return
 	}
 
 	user, err := userFromContext(creq)

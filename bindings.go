@@ -27,7 +27,7 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 				{
 					Icon:        appURL(creq, "/static/icon.png"),
 					Location:    "create-note-menu",
-					Label:       "New ProductBoard Note",
+					Label:       "Create a ProductBoard Note",
 					Description: "Use this post to create a Note in ProductBoard.",
 					Hint:        " -- TODO --",
 					Call:        createNoteCall("post-menu"),
