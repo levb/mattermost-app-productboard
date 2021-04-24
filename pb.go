@@ -1,3 +1,15 @@
+// TODO:
+//
+// - configure -> connect
+// - commands conditional on tokens available
+// - configure --clear -> disconnect
+// - /invite @user --create-note
+// - /invite --list
+// - /uninvite @user --create-note
+// 		- /disconnect --invite @from-user (same as ^^, but from the other end)
+// - /create note --as @user
+// 		- /create note --as default if only 1 is available
+// - Webhooks
 package main
 
 import (
@@ -45,6 +57,7 @@ func main() {
 	withLog("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	})
+	log.Printf("listening on :8080")
 	http.ListenAndServe(":8080", nil)
 }
 
