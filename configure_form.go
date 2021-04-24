@@ -12,11 +12,22 @@ func configureForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequ
 		Icon:  appURL(creq, "/static/icon.png"),
 		Fields: []*apps.Field{
 			{
-				Type:       "text",
-				Name:       "token",
+				Type:       apps.FieldTypeText,
+				Name:       "access_token",
 				ModalLabel: "Personal Access Token",
-				Label:      "token",
-				IsRequired: true,
+				Label:      "access-token",
+			},
+			{
+				Type:       apps.FieldTypeText,
+				Name:       "gdpr_token",
+				ModalLabel: "GDPR Public API Access Token",
+				Label:      "gdpr-token",
+			},
+			{
+				Type:       apps.FieldTypeBool,
+				Name:       "clear",
+				ModalLabel: "Clear All Tokens",
+				Label:      "clear",
 			},
 		},
 		Call: &apps.Call{

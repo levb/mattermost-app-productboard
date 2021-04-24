@@ -32,7 +32,11 @@ type PBCreateNoteResponse struct {
 func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	title, _ := creq.Values["title"].(string)
 	content, _ := creq.Values["content"].(string)
-	token, _ := creq.Context.OAuth2.User.(string)
+	u, err := userFromContext(creq)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, err)
+		return
+	}
 
 	permalink := ""
 	if creq.Context.PostID != "" {
@@ -56,8 +60,7 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 		respondError(w, http.StatusInternalServerError, err)
 		return
 	}
-	pbReq.Header.Add("Authorization", "Bearer "+token)
-	pbReq.Header.Add("Private-Token", token)
+	pbReq.Header.Add("Authorization", "Bearer "+u.AccessToken)
 	pbReq.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
