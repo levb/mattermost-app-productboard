@@ -10,6 +10,7 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 	user, _ := userFromContext(creq)
 	isConnectedAPI := user != nil && user.AccessToken != ""
 	isConnectedGDPR := user != nil && user.GDPRToken != ""
+	isAdmin := creq.Context.ActingUser != nil && creq.Context.ActingUser.IsSystemAdmin()
 
 	bindings := []apps.Binding{}
 	if isConnectedAPI {
@@ -35,9 +36,7 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 			Label:       "connect",
 			Description: "Connect to ProductBoard (configure access tokens).",
 			Hint:        "[ flags ]",
-			Call: &apps.Call{
-				Path: "/connect",
-			},
+			Call:        connectCall,
 		})
 	}
 	if isConnectedAPI || isConnectedGDPR {
@@ -45,9 +44,7 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 			Location:    "disconnect",
 			Label:       "disconnect",
 			Description: "Disconnect from ProductBoard (clear access tokens).",
-			Call: &apps.Call{
-				Path: "/disconnect",
-			},
+			Call:        disconnectCall,
 		})
 	}
 	if isConnectedAPI {
@@ -82,6 +79,14 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 					Call:        gdprPurgeCall,
 				},
 			},
+		})
+	}
+	if isAdmin {
+		commandBindings = append(commandBindings, &apps.Binding{
+			Location:    "subscribe",
+			Label:       "subscribe",
+			Description: "Subscribe to ProductBoard notifications (webhooks).",
+			Call:        subscribeCall,
 		})
 	}
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"net/http"
 
 	"github.com/pkg/errors"

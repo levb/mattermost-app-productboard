@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -24,6 +23,5 @@ func disconnect(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 		respondError(w, http.StatusInternalServerError, errors.Wrap(err, "failed to retrieve updated user record"))
 		return
 	}
-	respond(w, nil, "%s:\n%s", "Cleared all API access tokens", user.asList())
-
+	respond(w, nil, "Cleared all API access tokens:\n%s", user.asList())
 }
