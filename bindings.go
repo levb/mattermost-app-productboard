@@ -16,7 +16,7 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 					Location:    "pb",
 					Label:       "pb",
 					Description: "ProductBoard integration.",
-					Hint:        "[ configure | create | gdpr ]",
+					Hint:        "[ connect | create | gdpr ]",
 					Bindings:    commandBindings(creq),
 				},
 			},
@@ -40,12 +40,20 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 func commandBindings(creq *apps.CallRequest) []*apps.Binding {
 	return []*apps.Binding{
 		{
-			Location:    "configure",
-			Label:       "configure",
-			Description: "Configure ProductBoard access.",
+			Location:    "connect",
+			Label:       "connect",
+			Description: "Connect to ProductBoard (configure access tokens).",
 			Hint:        "[ flags ]",
 			Call: &apps.Call{
-				Path: "/configure",
+				Path: "/connect",
+			},
+		},
+		{
+			Location:    "disconnect",
+			Label:       "disconnect",
+			Description: "Disconnect from ProductBoard (clear access tokens).",
+			Call: &apps.Call{
+				Path: "/disconnect",
 			},
 		},
 		{

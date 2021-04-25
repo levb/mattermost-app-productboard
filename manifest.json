@@ -1,6 +1,6 @@
 {
 	"app_id": "com.mattermost.product-board",
-	"version":"0.0.4",
+	"version":"0.0.5",
 	"display_name": "ProductBoard integration",
 	"app_type": "http",
 	"root_url": "http://localhost:8080",

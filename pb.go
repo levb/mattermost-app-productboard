@@ -1,8 +1,6 @@
 // TODO:
 //
-// - configure -> connect
 // - commands conditional on tokens available
-// - configure --clear -> disconnect
 // - /invite @user --create-note
 // - /invite --list
 // - /uninvite @user --create-note
@@ -42,9 +40,11 @@ func main() {
 	// Serve the Channel Header and Command bindings for the App.
 	withLog("/bindings", call(bindings))
 
-	// `configure` command - stores the personal acces token
-	withLog("/configure/form", call(configureForm))
-	withLog("/configure/submit", call(configure))
+	// `connect` and `disconnect` commands - acces tokens
+	withLog("/connect/form", call(connectForm))
+	withLog("/connect/submit", call(connect))
+	withLog("/disconnect/form", call(disconnectForm))
+	withLog("/disconnect/submit", call(disconnect))
 
 	// `create note` command - creates a note.
 	withLog("/create-note/form", call(createNoteForm))
