@@ -7,21 +7,13 @@ import (
 )
 
 func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
-	respond(w, []apps.Binding{
-		{
-			Location: apps.LocationCommand,
-			Bindings: []*apps.Binding{
-				{
-					Icon:        appURL(creq, "/static/icon.png"),
-					Location:    "pb",
-					Label:       "pb",
-					Description: "ProductBoard integration.",
-					Hint:        "[ connect | create | gdpr ]",
-					Bindings:    commandBindings(creq),
-				},
-			},
-		},
-		{
+	user, _ := userFromContext(creq)
+	isConnectedAPI := user != nil && user.AccessToken != ""
+	isConnectedGDPR := user != nil && user.GDPRToken != ""
+
+	bindings := []apps.Binding{}
+	if isConnectedAPI {
+		bindings = append(bindings, apps.Binding{
 			Location: apps.LocationPostMenu,
 			Bindings: []*apps.Binding{
 				{
@@ -33,13 +25,12 @@ func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) 
 					Call:        createNoteCall("post-menu"),
 				},
 			},
-		},
-	}, "")
-}
+		})
+	}
 
-func commandBindings(creq *apps.CallRequest) []*apps.Binding {
-	return []*apps.Binding{
-		{
+	commandBindings := []*apps.Binding{}
+	if !isConnectedAPI || !isConnectedGDPR {
+		commandBindings = append(commandBindings, &apps.Binding{
 			Location:    "connect",
 			Label:       "connect",
 			Description: "Connect to ProductBoard (configure access tokens).",
@@ -47,16 +38,20 @@ func commandBindings(creq *apps.CallRequest) []*apps.Binding {
 			Call: &apps.Call{
 				Path: "/connect",
 			},
-		},
-		{
+		})
+	}
+	if isConnectedAPI || isConnectedGDPR {
+		commandBindings = append(commandBindings, &apps.Binding{
 			Location:    "disconnect",
 			Label:       "disconnect",
 			Description: "Disconnect from ProductBoard (clear access tokens).",
 			Call: &apps.Call{
 				Path: "/disconnect",
 			},
-		},
-		{
+		})
+	}
+	if isConnectedAPI {
+		commandBindings = append(commandBindings, &apps.Binding{
 			Location:    "create",
 			Label:       "create",
 			Description: "Create an item in ProductBoard.",
@@ -70,8 +65,10 @@ func commandBindings(creq *apps.CallRequest) []*apps.Binding {
 					Call:        createNoteCall("command"),
 				},
 			},
-		},
-		{
+		})
+	}
+	if isConnectedGDPR {
+		commandBindings = append(commandBindings, &apps.Binding{
 			Location:    "gdpr",
 			Label:       "gdpr",
 			Description: "Manage GDPR compliance in ProductBoard.",
@@ -85,6 +82,22 @@ func commandBindings(creq *apps.CallRequest) []*apps.Binding {
 					Call:        gdprPurgeCall,
 				},
 			},
-		},
+		})
 	}
+
+	bindings = append(bindings, apps.Binding{
+		Location: apps.LocationCommand,
+		Bindings: []*apps.Binding{
+			{
+				Icon:        appURL(creq, "/static/icon.png"),
+				Location:    "pb",
+				Label:       "pb",
+				Description: "ProductBoard integration.",
+				Hint:        "[ connect | create | gdpr ]",
+				Bindings:    commandBindings,
+			},
+		},
+	})
+
+	respond(w, bindings, "")
 }
