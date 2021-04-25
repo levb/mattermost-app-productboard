@@ -1,13 +1,14 @@
 // TODO:
 //
-// - commands conditional on tokens available
+// - Webhooks: make them work, if possible, or remove
+// - add command and form icons
 // - /invite @user --create-note
 // - /invite --list
 // - /uninvite @user --create-note
 // 		- /disconnect --invite @from-user (same as ^^, but from the other end)
 // - /create note --as @user
 // 		- /create note --as default if only 1 is available
-// - Webhooks
+//
 package main
 
 import (
@@ -49,6 +50,10 @@ func main() {
 	// `create note` command - creates a note.
 	withLog("/create-note/form", call(createNoteForm))
 	withLog("/create-note/submit", call(createNote))
+
+	// `subscribe` command - creates a webhook subscription.
+	withLog("/subscribe/form", call(subscribeForm))
+	withLog("/subscribe/submit", call(subscribe))
 
 	// `gdpr` command - purge customer data.
 	withLog("/gdpr-purge/form", call(gdprPurgeForm))

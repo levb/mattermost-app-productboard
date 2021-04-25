@@ -6,6 +6,13 @@ import (
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 )
 
+var connectCall = &apps.Call{
+	Path: "/connect",
+	Expand: &apps.Expand{
+		ActingUserAccessToken: apps.ExpandAll,
+	},
+}
+
 func connectForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	respondForm(w, &apps.Form{
 		Title: "Connect to ProductBoard (configure access)",
@@ -24,11 +31,6 @@ func connectForm(w http.ResponseWriter, req *http.Request, creq *apps.CallReques
 				Label:      "gdpr-token",
 			},
 		},
-		Call: &apps.Call{
-			Path: "/connect",
-			Expand: &apps.Expand{
-				ActingUserAccessToken: apps.ExpandAll,
-			},
-		},
+		Call: connectCall,
 	})
 }
