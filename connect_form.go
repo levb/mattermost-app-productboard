@@ -6,9 +6,9 @@ import (
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 )
 
-func configureForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
+func connectForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
 	respondForm(w, &apps.Form{
-		Title: "Configures ProductBoard access credentials",
+		Title: "Connect to ProductBoard (configure access)",
 		Icon:  appURL(creq, "/static/icon.png"),
 		Fields: []*apps.Field{
 			{
@@ -23,15 +23,9 @@ func configureForm(w http.ResponseWriter, req *http.Request, creq *apps.CallRequ
 				ModalLabel: "GDPR Public API Access Token",
 				Label:      "gdpr-token",
 			},
-			{
-				Type:       apps.FieldTypeBool,
-				Name:       "clear",
-				ModalLabel: "Clear All Tokens",
-				Label:      "clear",
-			},
 		},
 		Call: &apps.Call{
-			Path: "/configure",
+			Path: "/connect",
 			Expand: &apps.Expand{
 				ActingUserAccessToken: apps.ExpandAll,
 			},
