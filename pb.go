@@ -1,5 +1,6 @@
 // TODO:
 //
+// - Webhooks: make them work, if possible, or remove
 // - add command and form icons
 // - /invite @user --create-note
 // - /invite --list
@@ -7,7 +8,7 @@
 // 		- /disconnect --invite @from-user (same as ^^, but from the other end)
 // - /create note --as @user
 // 		- /create note --as default if only 1 is available
-// - Webhooks
+//
 package main
 
 import (
