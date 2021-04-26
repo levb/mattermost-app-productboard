@@ -4,10 +4,16 @@ import (
 	"net/http"
 
 	"github.com/mattermost/mattermost-plugin-apps/apps"
+	"github.com/pkg/errors"
 )
 
 func bindings(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest) {
-	user, _ := userFromContext(creq)
+	user, err := userFromContext(creq)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, errors.Wrap(err, "failed to extract user from context"))
+		return
+	}
+
 	isConnectedAPI := user != nil && user.AccessToken != ""
 	isConnectedGDPR := user != nil && user.GDPRToken != ""
 	isAdmin := creq.Context.ActingUser != nil && creq.Context.ActingUser.IsSystemAdmin()

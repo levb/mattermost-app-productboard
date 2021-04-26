@@ -19,7 +19,7 @@ func gdprPurge(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest)
 
 	q := url.Values{}
 	q.Add("email", email)
-	pbReq, err := http.NewRequest("DELETE", "https://api.productboard.com/v1/customers/delete_all_data?"+q.Encode(), nil)
+	pbReq, err := http.NewRequest(http.MethodDelete, "https://api.productboard.com/v1/customers/delete_all_data?"+q.Encode(), nil)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err)
 		return
