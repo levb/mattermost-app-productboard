@@ -7,11 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/mattermost/mattermost-plugin-apps/apps"
 	"github.com/mattermost/mattermost-plugin-apps/apps/mmclient"
 	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/pkg/errors"
 )
 
 type PBCreateNoteRequest struct {
@@ -62,7 +61,7 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 		return
 	}
 
-	pbReq, err := http.NewRequest("POST", "https://api.productboard.com/notes", bytes.NewReader(data))
+	pbReq, err := http.NewRequest(http.MethodPost, "https://api.productboard.com/notes", bytes.NewReader(data))
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err)
 		return
@@ -91,7 +90,7 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 
 	// Post feedback to the channel, as the acting user
 	asUser := mmclient.AsActingUser(creq.Context)
-	asUser.CreatePost(&model.Post{
+	_, err = asUser.CreatePost(&model.Post{
 		UserId:    creq.Context.ActingUserID,
 		ChannelId: creq.Context.ChannelID,
 		RootId:    creq.Context.RootPostID,
@@ -99,6 +98,10 @@ func createNote(w http.ResponseWriter, req *http.Request, creq *apps.CallRequest
 			"[%s](%s) has been submitted to ProductBoard for processing by a Product Manager.",
 			title, pb.Links.HTML),
 	})
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	respond(w, nil, "[%s](%s) created.", title, pb.Links.HTML)
 }

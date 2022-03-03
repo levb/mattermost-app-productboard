@@ -35,7 +35,7 @@ func createNoteForm(w http.ResponseWriter, req *http.Request, creq *apps.CallReq
 		if content != "" {
 			content += "\n\n"
 		}
-		content = fmt.Sprintf("Note created from a message in Mattermost, %s:\n\n%s", permalink(creq), post.Message)
+		content += fmt.Sprintf("Note created from a message in Mattermost, %s:\n\n%s", permalink(creq), post.Message)
 	}
 
 	form := &apps.Form{

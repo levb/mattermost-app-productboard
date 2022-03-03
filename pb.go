@@ -63,7 +63,7 @@ func main() {
 		w.WriteHeader(http.StatusNotFound)
 	})
 	log.Printf("listening on :8080")
-	http.ListenAndServe(":8080", nil)
+	_ = http.ListenAndServe(":8080", nil)
 }
 
 func withLog(path string, f http.HandlerFunc) {
@@ -85,6 +85,7 @@ func call(f func(w http.ResponseWriter, req *http.Request, creq *apps.CallReques
 			respondError(w, http.StatusBadRequest, err)
 			return
 		}
+
 		f(w, req, &creq)
 	}
 }
@@ -101,6 +102,7 @@ func writeJSON(w http.ResponseWriter, statusCode int, v interface{}) {
 		log.Printf("failed to encode output: %v", err)
 		return
 	}
+
 	writeData(w, "application/json", statusCode, data)
 }
 
@@ -146,7 +148,13 @@ func permalink(creq *apps.CallRequest) string {
 	if creq.Context.PostID == "" {
 		return ""
 	}
-	u, _ := url.Parse(creq.Context.MattermostSiteURL)
+
+	u, err := url.Parse(creq.Context.MattermostSiteURL)
+	if err != nil {
+		return ""
+
+	}
+
 	u.Path = path.Join(u.Path, "_redirect", "pl", creq.Context.PostID)
 	return u.String()
 }

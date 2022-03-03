@@ -1,8 +1,6 @@
 package main
 
 import (
-	_ "embed"
-
 	"github.com/pkg/errors"
 
 	"github.com/mattermost/mattermost-plugin-apps/apps"
@@ -24,6 +22,7 @@ func (u User) asList() string {
 	if out == "" {
 		return "empty"
 	}
+
 	return out
 }
 
@@ -44,6 +43,7 @@ func userFromContext(creq *apps.CallRequest) (*User, error) {
 			return nil, errors.Errorf("unrecognized key: %s", k)
 		}
 	}
+
 	return &u, nil
 }
 
@@ -56,5 +56,6 @@ func last4(in string) string {
 	for ; i < len(in); i++ {
 		out += in[i : i+1]
 	}
+
 	return out
 }
